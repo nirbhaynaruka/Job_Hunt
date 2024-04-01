@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
-import chromedriver_autoinstaller
+# import chromedriver_autoinstaller
 from flask_cors import CORS
 from flask import send_from_directory
 import os
@@ -21,7 +21,7 @@ if not os.path.exists(CSV_FOLDER):
     os.makedirs(CSV_FOLDER)
 def get_driver():
     # Ensure ChromeDriver is installed or updated automatically
-    chromedriver_autoinstaller.install()
+    # chromedriver_autoinstaller.install()
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])

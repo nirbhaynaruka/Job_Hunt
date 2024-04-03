@@ -18,6 +18,7 @@ CORS(app)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 CSV_FOLDER = os.path.join(os.getcwd(), 'csv_files')
 
+
 if not os.path.exists(CSV_FOLDER):
     os.makedirs(CSV_FOLDER)
 def get_driver():

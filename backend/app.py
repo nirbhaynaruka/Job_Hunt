@@ -12,9 +12,6 @@ from flask_cors import CORS
 from flask import send_from_directory
 import os
 from datetime import datetime
-import platform
-from selenium.webdriver.chrome.service import Service
-
 
 app = Flask(__name__)
 CORS(app)
@@ -27,19 +24,10 @@ if not os.path.exists(CSV_FOLDER):
 def get_driver():
     # Ensure ChromeDriver is installed or updated automatically
     # chromedriver_autoinstaller.install()
-    if platform.system() == "Linux":
-        # Path for Render (Linux)
-        driver_path = os.path.join(os.getcwd(), 'drivers', 'chromedriver_linux')
-    elif platform.system() == "Windows":
-        # Path for local development (Windows)
-        driver_path = os.path.join(os.getcwd(), 'drivers', 'chromedriver.exe')
-    else:
-        raise Exception("Unsupported operating system")
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    service = Service(executable_path=driver_path)
-    return webdriver.Chrome(service=service, options=options)
+    return webdriver.Chrome(options=options)
 
 def get_text_safe(element, index=None):
     if isinstance(element, list):
@@ -56,19 +44,19 @@ def scrape_jobs(job_name, country_name, time_range):
 
     wait = WebDriverWait(driver, 15)
 
-    # final_url = f"https://www.linkedin.com/jobs/search/?keywords={job_name.replace(' ', '%20')}&location={country_name.replace(' ', '%20')}&{time_range}"
-    # driver.get(final_url)
+    final_url = f"https://www.linkedin.com/jobs/search/?keywords={job_name.replace(' ', '%20')}&location={country_name.replace(' ', '%20')}&{time_range}"
+    driver.get(final_url)
 
-    # for _ in range(4):
-    #     driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
-    #     time.sleep(3)
-    #     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    # time.sleep(2)
-    # job_listing_divs = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'job-search-card')]")))
-    # job_ids = [div.get_attribute('data-entity-urn').split(':')[-1] for div in job_listing_divs if div.get_attribute('data-entity-urn')]
+    for _ in range(4):
+        driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
+        time.sleep(3)
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    job_listing_divs = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'job-search-card')]")))
+    job_ids = [div.get_attribute('data-entity-urn').split(':')[-1] for div in job_listing_divs if div.get_attribute('data-entity-urn')]
 
     jobs_df = pd.DataFrame(columns=["Date Scraped","Job Title", "Company Name", "Location", "Salary Range", "Date Posted", "Applicants", "Job Level", "Industry", "Description", "Recruiter Name", "Recruiter Position", "Job Link"])
-    job_ids = [  '3852161408', '3875625943']
+    # job_ids = [  '3852161408', '3875625943']
     for job_id in job_ids:
         job_url= f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{job_id}"
         job_urll = f"https://www.linkedin.com/jobs/search/?currentJobId={job_id}&keywords={job_name.replace(' ', '%20')}&location={country_name.replace(' ', '%20')}"

@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
-# import chromedriver_autoinstaller
+import chromedriver_autoinstaller
 from flask_cors import CORS
 from flask import send_from_directory
 import os
@@ -23,9 +23,9 @@ if not os.path.exists(CSV_FOLDER):
     os.makedirs(CSV_FOLDER)
 def get_driver():
     # Ensure ChromeDriver is installed or updated automatically
-    # chromedriver_autoinstaller.install()
+    chromedriver_autoinstaller.install()
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
+    # options.add_argument('--headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     return webdriver.Chrome(options=options)
 
@@ -44,7 +44,7 @@ def scrape_jobs(job_name, country_name, time_range):
 
     wait = WebDriverWait(driver, 15)
 
-    final_url = f"https://www.linkedin.com/jobs/search/?keywords={job_name.replace(' ', '%20')}&location={country_name.replace(' ', '%20')}&{time_range}"
+    final_url = f"https://www.linkedin.com/jobs/search/?keywords={job_name.replace(' ', '%20')}&location={country_name.replace(' ', '%20')}"
     driver.get(final_url)
 
     for _ in range(4):
